@@ -6,7 +6,7 @@ const Card = (props) => {
       <div className="card-sides">
         <div className="card-front" style={{ backgroundColor: props.color }}>
           <img src={props.image} alt="Weapon logo" />
-          <p>???</p>
+          <p>What Weapon is this?</p>
         </div>
         <div className="card-back" style={{ backgroundColor: props.color }}>
           <h2>{props.weapon}</h2>

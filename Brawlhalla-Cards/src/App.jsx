@@ -22,27 +22,81 @@ const App = () =>{
     { weapon: "Chakram", color: "green", image: "https://brawlhalla.wiki.gg/images/thumb/2/21/Chakram_Icon.png/54px-Chakram_Icon.png?1d6946" }
   ];
 
+
+  const [shuffledWeapons, setShuffledWeapons] = useState(weapons);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const currentWeapon = weapons[index];
+  const currentWeapon = shuffledWeapons[index];
+  const [answer, setAnswer] = useState('');
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [feedback, setFeedback] = useState('');
+
+  const shuffleWeapons = () => {
+    const shuffled = [...shuffledWeapons].sort(() => Math.random() - 0.5);
+    setShuffledWeapons(shuffled);
+    setIndex(0);
+    setFlipped(false);
+  };
+
 
   const handleNext = () => {
     setFlipped(false);
-    setIndex((index) => (index + 1) % weapons.length);
+    setIndex((index) => (index + 1) % shuffledWeapons.length);
+  }
+
+  const handlePrevious = () => {
+    setFlipped(false);
+    setIndex((index) => index === 0 ? shuffledWeapons.length - 1 : index - 1
+  );
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
+    const correct = currentWeapon.weapon.toLowerCase();
+    const userAnswer = answer.trim().toLowerCase();
+  
+    if (userAnswer === correct) {
+      const newScore = score + 1;
+      setScore(newScore);
+      if (newScore > highScore) {
+        setHighScore(newScore);
+      }
+      setIndex((index) => (index + 1) % shuffledWeapons.length);
+      setFeedback('✅ Correct!');
+      setAnswer('');
+      setFlipped(false);
+    } else {
+      setScore(0);
+      setAnswer('');
+      setFeedback('❌ Wrong! Try again.');
+    }
+    setTimeout(() => {
+      setFeedback('');
+    }, 2000);
   };
+  
 
   return(
   <div className='container'>
       <h1>Brawlhalla Weapon Quiz</h1>
       <Card image={currentWeapon.image} weapon={currentWeapon.weapon} color={currentWeapon.color} flipped={flipped} onFlip={() =>setFlipped(!flipped)} />
+      <form onSubmit={handleSubmit}>
+      <input type="text" placeholder="This Brawlhalla Weapon is..." value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+      />
+      <button type="submit">Submit</button>
+      </form>
+      <p>Score: {score} | High Score: {highScore}</p>
+      <div className ='btn-container'>
+      <button onClick={handlePrevious}>Previous</button>
       <button onClick={handleNext}>Next</button>
+      <button onClick={shuffleWeapons}>Shuffle</button>
+      </div> 
+      {feedback && (<div className="toast"> {feedback}</div>)}
     </div>
 
 )
-
-
-
-
-}
-
+  };
 export default App
